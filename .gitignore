@@ -1,0 +1,37 @@
+# Secrets / credentials — never commit
+*.pem
+*.key
+*.crt
+.env
+.env.*
+credentials
+**/credentials
+config.local
+secrets.*
+*.tfvars
+*.tfvars.json
+.aws/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Logs / scratch
+*.log
+*.tmp
+tmp/
+scratch/
+out/
