@@ -1,0 +1,20 @@
+{
+  "jobDefinitionName": "coverage-spark-ssc-mosdepth",
+  "type": "container",
+  "platformCapabilities": ["EC2"],
+  "containerProperties": {
+    "image": "640838474376.dkr.ecr.us-east-1.amazonaws.com/coverage-spark-ssc:v1",
+    "vcpus": 4,
+    "memory": 8192,
+    "environment": [
+      { "name": "SAMPLES_S3_URL",   "value": "s3://sebat-genomics-work/coverage_spark_ssc/_inputs/samples.csv" },
+      { "name": "OUTPUT_S3_PREFIX", "value": "s3://sebat-genomics-work/coverage_spark_ssc/results/" },
+      { "name": "THREADS",          "value": "4" }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs"
+    }
+  },
+  "retryStrategy": { "attempts": 2 },
+  "timeout": { "attemptDurationSeconds": 7200 }
+}
