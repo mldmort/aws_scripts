@@ -15,14 +15,6 @@ TAG="${TAG:-v1}"
 REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 IMAGE="${REGISTRY}/${REPO}:${TAG}"
 
-echo ">> verifying ECR repo $REPO exists"
-aws --region "$REGION" ecr describe-repositories --repository-names "$REPO" >/dev/null 2>&1 || {
-  echo "ERROR: ECR repo $REPO does not exist." >&2
-  echo "Create it from a host with ecr:CreateRepository perms:" >&2
-  echo "  aws --profile default --region $REGION ecr create-repository --repository-name $REPO" >&2
-  exit 1
-}
-
 echo ">> docker login to $REGISTRY"
 aws --region "$REGION" ecr get-login-password \
   | docker login --username AWS --password-stdin "$REGISTRY"
