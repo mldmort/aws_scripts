@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fourth batch: 2100 SPARK iWGS_v1.1 CRAMs (~40 TB) staged from SFARI to
+# Fourth batch: 2000 SPARK iWGS_v1.1 CRAMs (~38 TB) staged from SFARI to
 # Expanse Lustre. Picks up where 2_run.sh left off.
 set -euo pipefail
-"$(dirname "$0")/submit_transfer.sh" --offset 4200 --limit 2100
+"$(dirname "$0")/submit_transfer.sh" --offset 4200 --limit 2000
