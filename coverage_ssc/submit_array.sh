@@ -19,8 +19,11 @@ shift || true
 
 REGION=us-east-1
 JOB_NAME="coverage-ssc-$(date -u +%Y%m%dT%H%M%SZ)"
-QUEUE="genomics-queue"
-JOB_DEF="coverage-spark-ssc-mosdepth"
+# Default to Fargate (genomics-fargate-queue + coverage-ssc-mosdepth-fargate job
+# def). Fargate gives each task its own ephemeralStorage (50 GiB here) so the
+# 25-GB SSC CRAMs don't bust the worker disk like they did on EC2 Spot.
+QUEUE="genomics-fargate-queue"
+JOB_DEF="coverage-ssc-mosdepth-fargate"
 SAMPLES_S3_URL="s3://sebat-genomics-work/coverage_ssc/_inputs/samples.csv"
 OUTPUT_S3_PREFIX="s3://sebat-genomics-work/coverage_ssc/results/"
 

@@ -1,0 +1,29 @@
+{
+  "jobDefinitionName": "coverage-ssc-mosdepth-fargate",
+  "type": "container",
+  "platformCapabilities": ["FARGATE"],
+  "containerProperties": {
+    "image": "640838474376.dkr.ecr.us-east-1.amazonaws.com/coverage-spark-ssc:v1",
+    "resourceRequirements": [
+      { "type": "VCPU",   "value": "4" },
+      { "type": "MEMORY", "value": "8192" }
+    ],
+    "executionRoleArn": "arn:aws:iam::640838474376:role/ecsTaskExecutionRole",
+    "jobRoleArn":       "arn:aws:iam::640838474376:role/ecsInstanceRole",
+    "networkConfiguration": {
+      "assignPublicIp": "ENABLED"
+    },
+    "ephemeralStorage": { "sizeInGiB": 50 },
+    "fargatePlatformConfiguration": { "platformVersion": "LATEST" },
+    "environment": [
+      { "name": "SAMPLES_S3_URL",   "value": "s3://sebat-genomics-work/coverage_ssc/_inputs/samples.csv" },
+      { "name": "OUTPUT_S3_PREFIX", "value": "s3://sebat-genomics-work/coverage_ssc/results/" },
+      { "name": "THREADS",          "value": "4" }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs"
+    }
+  },
+  "retryStrategy": { "attempts": 2 },
+  "timeout": { "attemptDurationSeconds": 7200 }
+}
