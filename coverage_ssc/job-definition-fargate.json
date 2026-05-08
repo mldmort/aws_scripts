@@ -3,7 +3,7 @@
   "type": "container",
   "platformCapabilities": ["FARGATE"],
   "containerProperties": {
-    "image": "640838474376.dkr.ecr.us-east-1.amazonaws.com/coverage-spark-ssc:v1",
+    "image": "640838474376.dkr.ecr.us-east-1.amazonaws.com/coverage-spark-ssc:v2",
     "resourceRequirements": [
       { "type": "VCPU",   "value": "4" },
       { "type": "MEMORY", "value": "8192" }
@@ -18,6 +18,7 @@
     "environment": [
       { "name": "SAMPLES_S3_URL",   "value": "s3://sebat-genomics-work/coverage_ssc/_inputs/samples.csv" },
       { "name": "OUTPUT_S3_PREFIX", "value": "s3://sebat-genomics-work/coverage_ssc/results/" },
+      { "name": "REFERENCE_S3_URL", "value": "s3://sebat-genomics-work/refs/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa" },
       { "name": "THREADS",          "value": "4" }
     ],
     "logConfiguration": {
