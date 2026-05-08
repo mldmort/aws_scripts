@@ -38,12 +38,17 @@ done
 : "${SFARI_ACCESS_KEY:?required (sfari access key id)}"
 : "${SFARI_SECRET_KEY:?required (sfari secret access key)}"
 
-OVERRIDES="{\"environment\": [
-  {\"name\": \"SFARI_ACCESS_KEY\", \"value\": \"$SFARI_ACCESS_KEY\"},
+# Build env-vars block. For non-array jobs (size=1), Batch doesn't set
+# AWS_BATCH_JOB_ARRAY_INDEX; supply it manually so the worker has an index.
+ENV_BLOCK="{\"name\": \"SFARI_ACCESS_KEY\", \"value\": \"$SFARI_ACCESS_KEY\"},
   {\"name\": \"SFARI_SECRET_KEY\", \"value\": \"$SFARI_SECRET_KEY\"},
   {\"name\": \"SAMPLES_S3_URL\",   \"value\": \"$SAMPLES_S3_URL\"},
-  {\"name\": \"OUTPUT_S3_PREFIX\", \"value\": \"$OUTPUT_S3_PREFIX\"}
-]}"
+  {\"name\": \"OUTPUT_S3_PREFIX\", \"value\": \"$OUTPUT_S3_PREFIX\"}"
+if [[ "$SIZE" -le 1 ]]; then
+  ENV_BLOCK="${ENV_BLOCK},
+  {\"name\": \"AWS_BATCH_JOB_ARRAY_INDEX\", \"value\": \"0\"}"
+fi
+OVERRIDES="{\"environment\": [$ENV_BLOCK]}"
 
 ARGS=(
   --region "$REGION"
