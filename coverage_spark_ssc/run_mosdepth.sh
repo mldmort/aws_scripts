@@ -5,6 +5,8 @@
 # Required env vars:
 #   SAMPLES_S3_URL      e.g. s3://sebat-genomics-work/coverage_spark_ssc/_inputs/samples.csv
 #   OUTPUT_S3_PREFIX    e.g. s3://sebat-genomics-work/coverage_spark_ssc/results/
+#   REFERENCE_S3_URL    e.g. s3://sebat-genomics-work/refs/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
+#                       Worker also fetches sibling .fai (REFERENCE_S3_URL + ".fai")
 #   SFARI_ACCESS_KEY    sfari access key (reads s3://sparkgenomics)
 #   SFARI_SECRET_KEY    sfari secret
 # Optional:
@@ -20,6 +22,7 @@ INDEX="${AWS_BATCH_JOB_ARRAY_INDEX:-${1:-}}"
 
 : "${SAMPLES_S3_URL:?required}"
 : "${OUTPUT_S3_PREFIX:?required}"
+: "${REFERENCE_S3_URL:?required}"
 : "${SFARI_ACCESS_KEY:?required}"
 : "${SFARI_SECRET_KEY:?required}"
 THREADS="${THREADS:-4}"
@@ -48,11 +51,15 @@ AWS_ACCESS_KEY_ID="$SFARI_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$SFARI_SECRET_KEY" 
 AWS_ACCESS_KEY_ID="$SFARI_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$SFARI_SECRET_KEY" \
   aws s3 cp "$CRAI_URL" "${SAMPLE_ID}.cram.crai"
 
+echo ">> downloading reference FASTA + .fai (default creds)"
+REF_BASENAME="$(basename "$REFERENCE_S3_URL")"
+aws s3 cp "$REFERENCE_S3_URL"     "$REF_BASENAME"
+aws s3 cp "${REFERENCE_S3_URL}.fai" "${REF_BASENAME}.fai"
+
 echo ">> running mosdepth (threads=$THREADS)"
-# Lets htslib auto-fetch the CRAM reference from EBI's md5-keyed server (default
-# behavior). If we hit reference-fetch problems at scale, set REF_PATH / REF_CACHE
-# to a pre-staged GRCh38 reference instead.
-mosdepth --threads "$THREADS" --no-per-base --by 1000 "$SAMPLE_ID" "${SAMPLE_ID}.cram"
+mosdepth --threads "$THREADS" --no-per-base --by 1000 \
+    --fasta "$REF_BASENAME" \
+    "$SAMPLE_ID" "${SAMPLE_ID}.cram"
 
 echo ">> uploading outputs"
 DEST="${OUTPUT_S3_PREFIX%/}/${SAMPLE_ID}/"
