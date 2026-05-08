@@ -39,16 +39,18 @@ done
 : "${SFARI_SECRET_KEY:?required (sfari secret access key)}"
 
 # Build env-vars block. For non-array jobs (size=1), Batch doesn't set
-# AWS_BATCH_JOB_ARRAY_INDEX; supply it manually so the worker has an index.
+# AWS_BATCH_JOB_ARRAY_INDEX, and we can't override it via env (Batch
+# reserves all AWS_BATCH_* names). Pass the index as a positional arg
+# instead, which run_mosdepth.sh will read from $1.
 ENV_BLOCK="{\"name\": \"SFARI_ACCESS_KEY\", \"value\": \"$SFARI_ACCESS_KEY\"},
   {\"name\": \"SFARI_SECRET_KEY\", \"value\": \"$SFARI_SECRET_KEY\"},
   {\"name\": \"SAMPLES_S3_URL\",   \"value\": \"$SAMPLES_S3_URL\"},
   {\"name\": \"OUTPUT_S3_PREFIX\", \"value\": \"$OUTPUT_S3_PREFIX\"}"
+OVERRIDES="{\"environment\": [$ENV_BLOCK]"
 if [[ "$SIZE" -le 1 ]]; then
-  ENV_BLOCK="${ENV_BLOCK},
-  {\"name\": \"AWS_BATCH_JOB_ARRAY_INDEX\", \"value\": \"0\"}"
+  OVERRIDES="${OVERRIDES}, \"command\": [\"0\"]"
 fi
-OVERRIDES="{\"environment\": [$ENV_BLOCK]}"
+OVERRIDES="${OVERRIDES}}"
 
 ARGS=(
   --region "$REGION"
