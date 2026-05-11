@@ -13,7 +13,7 @@
     "networkConfiguration": {
       "assignPublicIp": "ENABLED"
     },
-    "ephemeralStorage": { "sizeInGiB": 50 },
+    "ephemeralStorage": { "sizeInGiB": 100 },
     "fargatePlatformConfiguration": { "platformVersion": "LATEST" },
     "environment": [
       { "name": "SAMPLES_S3_URL",   "value": "s3://sebat-genomics-work/coverage_ssc/_inputs/samples.csv" },
